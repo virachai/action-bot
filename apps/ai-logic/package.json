@@ -1,0 +1,12 @@
+{
+    "name": "@repo/ai-logic",
+    "version": "0.0.0",
+    "private": true,
+    "scripts": {
+        "dev": "uvicorn src.main:app --reload --port 8001",
+        "start": "uvicorn src.main:app --host 0.0.0.0 --port 8001",
+        "generate:script": "python -m src.cli",
+        "lint": "ruff check src/",
+        "format": "ruff format src/"
+    }
+}

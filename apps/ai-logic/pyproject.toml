@@ -1,0 +1,16 @@
+[project]
+name = "ai-logic"
+version = "0.1.0"
+description = "AI Logic service for Auto-Short-Factory using Gemini 1.5 Flash"
+requires-python = ">=3.11"
+dependencies = [
+    "google-generativeai>=0.3.2",
+    "pydantic>=2.5.0",
+    "python-dotenv>=1.0.0",
+    "fastapi>=0.108.0",
+    "uvicorn[standard]>=0.25.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"

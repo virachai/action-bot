@@ -1,0 +1,30 @@
+{
+    "name": "@repo/orchestrator",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "type-check": "tsc --noEmit",
+        "lint": "eslint . --max-warnings 0",
+        "clean": "rm -rf dist"
+    },
+    "dependencies": {
+        "@aws-sdk/client-s3": "^3.490.0",
+        "@aws-sdk/s3-request-presigner": "^3.490.0",
+        "@repo/config": "workspace:*",
+        "@repo/types": "workspace:*",
+        "axios": "^1.6.5",
+        "zod": "^3.22.4"
+    },
+    "devDependencies": {
+        "@repo/eslint-config": "workspace:*",
+        "@repo/typescript-config": "workspace:*",
+        "@types/node": "^20.11.5",
+        "eslint": "^8.56.0",
+        "tsx": "^4.7.0",
+        "typescript": "^5.3.3"
+    }
+}

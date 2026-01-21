@@ -1,17 +1,77 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
-  "globalDependencies": ["**/.env.*local"],
+  "globalDependencies": [
+    "**/.env.*local",
+    "**/.env"
+  ],
   "tasks": {
     "dev": {
       "cache": false,
       "persistent": true
     },
     "build": {
-      "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "build/**"
+      ],
+      "env": [
+        "NODE_ENV"
+      ]
     },
-    "lint": {},
-    "test": {},
-    "test:e2e": {}
+    "type-check": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": true
+    },
+    "lint": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": true
+    },
+    "test": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": true
+    },
+    "test:e2e": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false
+    },
+    "generate:script": {
+      "cache": true,
+      "outputs": [
+        "output/**/*.json"
+      ],
+      "env": [
+        "GEMINI_API_KEY"
+      ]
+    },
+    "generate:video": {
+      "dependsOn": [
+        "generate:script"
+      ],
+      "cache": true,
+      "outputs": [
+        "output/**/*.mp4"
+      ],
+      "env": [
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_REGION"
+      ]
+    },
+    "clean": {
+      "cache": false
+    }
   }
 }

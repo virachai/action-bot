@@ -1,17 +1,21 @@
 {
-  "name": "my-turborepo",
-  "version": "0.0.0",
+  "name": "auto-short-factory",
+  "version": "1.0.0",
   "private": true,
-  "description": "",
-  "author": "",
-  "license": "UNLICENSED",
+  "description": "Automated video creation factory for TikTok, Reels, and YouTube Shorts",
+  "author": "Auto-Short-Factory Team",
+  "license": "MIT",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
     "test": "turbo run test",
     "test:e2e": "turbo run test:e2e",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "type-check": "turbo run type-check",
+    "generate:video": "turbo run generate:video",
+    "setup": "node scripts/setup.js",
+    "clean": "turbo run clean && rm -rf node_modules"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -21,6 +25,7 @@
   },
   "packageManager": "pnpm@8.15.5",
   "engines": {
-    "node": ">=18"
+    "node": ">=18",
+    "pnpm": ">=8"
   }
 }

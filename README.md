@@ -1,124 +1,373 @@
-# Turborepo starter
+# 🎬 Auto-Short-Factory
 
-This is a community-maintained example. If you experience a problem, please submit a pull request with a fix. GitHub Issues will be closed.
+> Automated video creation factory for TikTok, Instagram Reels, and YouTube Shorts powered by AI and FFmpeg
 
-## Using this example
+An intelligent monorepo built with **Turborepo** that automatically generates engaging vertical videos (9:16) using **Gemini 1.5 Flash AI** for script generation and **FFmpeg** for video assembly.
 
-Run the following command:
+## 📋 Table of Contents
 
-```bash
-npx create-turbo@latest -e with-nestjs
+- [Features](#features)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Configuration](#configuration)
+- [Development](#development)
+- [Deployment](#deployment)
+- [API Documentation](#api-documentation)
+
+## ✨ Features
+
+- 🤖 **AI-Powered Script Generation** - Gemini 1.5 Flash creates engaging video scripts
+- 🎥 **Automated Video Assembly** - FFmpeg-based pipeline for professional video output
+- 📱 **Platform-Optimized** - 9:16 vertical format for TikTok, Reels, and Shorts
+- ☁️ **Cloud Storage** - AWS S3 integration for assets and outputs
+- ⚡ **Turborepo** - Optimized monorepo with intelligent caching
+- 🔄 **GitHub Actions** - Automated hourly video generation
+- 📊 **TypeScript First** - Type-safe orchestration and configuration
+- 🐍 **Python Services** - High-performance AI and video processing
+
+## 🏗️ Architecture
+
+```mermaid
+graph TB
+    A[GitHub Actions Trigger] --> B[Orchestrator Node.js]
+    B --> C[AI Logic Python/Gemini]
+    B --> D[S3 Storage]
+    C --> E[Generate Script]
+    E --> F[Video Engine Python/FFmpeg]
+    F --> G[Assemble Video]
+    G --> D
+    D --> H[Output MP4]
 ```
 
-## What's inside?
+## 🛠️ Tech Stack
 
-This Turborepo includes the following packages & apps:
+### Core Technologies
+- **Monorepo**: Turborepo + pnpm workspaces
+- **Languages**: TypeScript (Node.js 18+), Python 3.11+
+- **AI**: Google Gemini 1.5 Flash API
+- **Video**: FFmpeg 6.0+ with hardware acceleration
+- **Storage**: Amazon S3
+- **CI/CD**: GitHub Actions (ubuntu-latest)
 
-### Apps and Packages
+### Key Dependencies
+- **Node.js**: `@aws-sdk/client-s3`, `axios`, `zod`
+- **Python**: `google-generativeai`, `ffmpeg-python`, `fastapi`, `pydantic`
 
-```shell
-.
-├── apps
-│   ├── api                       # NestJS app (https://nestjs.com).
-│   └── web                       # Next.js app (https://nextjs.org).
-└── packages
-    ├── @repo/api                 # Shared `NestJS` resources.
-    ├── @repo/eslint-config       # `eslint` configurations (includes `prettier`)
-    ├── @repo/jest-config         # `jest` configurations
-    ├── @repo/typescript-config   # `tsconfig.json`s used throughout the monorepo
-    └── @repo/ui                  # Shareable stub React component library.
+## 📁 Project Structure
+
+```
+auto-short-factory/
+├── apps/
+│   ├── orchestrator/          # Node.js/TypeScript - Workflow controller
+│   │   ├── src/
+│   │   │   ├── index.ts       # Main orchestrator
+│   │   │   └── services/      # S3, AI, Video services
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   │
+│   ├── ai-logic/              # Python - Gemini AI integration
+│   │   ├── src/
+│   │   │   ├── main.py        # FastAPI service
+│   │   │   ├── gemini_client.py
+│   │   │   └── schemas.py     # Pydantic models
+│   │   ├── requirements.txt
+│   │   └── pyproject.toml
+│   │
+│   ├── video-engine/          # Python - FFmpeg video assembly
+│   │   ├── src/
+│   │   │   ├── main.py        # FastAPI service
+│   │   │   └── video_assembler.py
+│   │   ├── requirements.txt
+│   │   └── pyproject.toml
+│   │
+│   ├── api/                   # NestJS API (existing)
+│   └── web/                   # Next.js web (existing)
+│
+├── packages/
+│   ├── config/                # Shared configuration
+│   │   └── src/
+│   │       ├── index.ts       # AWS, Gemini, video config
+│   │       └── env.ts         # Environment validation
+│   │
+│   ├── types/                 # Shared TypeScript types
+│   │   └── src/index.ts       # VideoScript, WorkflowState, etc.
+│   │
+│   ├── eslint-config/         # ESLint configurations
+│   ├── typescript-config/     # TypeScript configurations
+│   └── ui/                    # Shared UI components
+│
+├── .github/
+│   └── workflows/
+│       └── auto-video-factory.yml  # Hourly automation
+│
+├── turbo.json                 # Turborepo configuration
+├── pnpm-workspace.yaml        # pnpm workspace config
+└── package.json               # Root package
 ```
 
-Each package and application are mostly written in [TypeScript](https://www.typescriptlang.org/).
+## 🚀 Getting Started
 
-### Utilities
+### Prerequisites
 
-This `Turborepo` has some additional tools already set for you:
+- **Node.js** 18+ and **pnpm** 8+
+- **Python** 3.11+
+- **FFmpeg** 6.0+
+- **AWS Account** with S3 buckets
+- **Google AI Studio** API key for Gemini
 
-- [TypeScript](https://www.typescriptlang.org/) for static type-safety
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-- [Jest](https://prettier.io) & [Playwright](https://playwright.dev/) for testing
+### Installation
 
-### Commands
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/auto-short-factory.git
+   cd auto-short-factory
+   ```
 
-This `Turborepo` already configured useful commands for all your apps and packages.
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-#### Build
+3. **Install Python dependencies**
+   ```bash
+   # AI Logic service
+   cd apps/ai-logic
+   pip install -r requirements.txt
+   
+   # Video Engine service
+   cd ../video-engine
+   pip install -r requirements.txt
+   cd ../..
+   ```
+
+4. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Edit `.env.local` with your credentials (see [Configuration](#configuration))
+
+5. **Build all packages**
+   ```bash
+   pnpm run build
+   ```
+
+### Quick Start
+
+Start all services in development mode:
 
 ```bash
-# Will build all the app & packages with the supported `build` script.
-pnpm run build
+# Terminal 1: AI Logic Service
+cd apps/ai-logic
+pnpm run dev
 
-# ℹ️ If you plan to only build apps individually,
-# Please make sure you've built the packages first.
-```
+# Terminal 2: Video Engine Service
+cd apps/video-engine
+pnpm run dev
 
-#### Develop
-
-```bash
-# Will run the development server for all the app & packages with the supported `dev` script.
+# Terminal 3: Orchestrator
+cd apps/orchestrator
 pnpm run dev
 ```
 
-#### test
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env.local` file in the root directory:
 
 ```bash
-# Will launch a test suites for all the app & packages with the supported `test` script.
+# Gemini AI Configuration
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_MODEL=gemini-1.5-flash
+
+# AWS S3 Configuration
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=us-east-1
+S3_BUCKET_INPUT=auto-short-factory-input
+S3_BUCKET_OUTPUT=auto-short-factory-output
+S3_BUCKET_ASSETS=auto-short-factory-assets
+
+# Video Configuration
+VIDEO_TOPIC=The Future of AI
+VIDEO_WIDTH=1080
+VIDEO_HEIGHT=1920
+VIDEO_FPS=30
+
+# Service URLs (development)
+AI_LOGIC_URL=http://localhost:8001
+VIDEO_ENGINE_URL=http://localhost:8002
+
+# Environment
+NODE_ENV=development
+```
+
+### GitHub Secrets
+
+For GitHub Actions, configure these secrets in your repository settings:
+
+- `GEMINI_API_KEY` - Your Gemini API key
+- `AWS_ACCESS_KEY_ID` - AWS access key
+- `AWS_SECRET_ACCESS_KEY` - AWS secret key
+- `AWS_REGION` - AWS region (optional, defaults to us-east-1)
+- `S3_BUCKET_INPUT` - Input bucket name (optional)
+- `S3_BUCKET_OUTPUT` - Output bucket name (optional)
+- `S3_BUCKET_ASSETS` - Assets bucket name (optional)
+- `VIDEO_TOPIC` - Default video topic (optional)
+
+## 💻 Development
+
+### Available Scripts
+
+From the root directory:
+
+```bash
+# Start all services in dev mode
+pnpm run dev
+
+# Build all packages
+pnpm run build
+
+# Type check all TypeScript code
+pnpm run type-check
+
+# Lint all code
+pnpm run lint
+
+# Format all code
+pnpm run format
+
+# Run tests
 pnpm run test
 
-# You can launch e2e testes with `test:e2e`
-pnpm run test:e2e
-
-# See `@repo/jest-config` to customize the behavior.
+# Clean build artifacts
+pnpm run clean
 ```
 
-#### Lint
+### Individual Service Commands
 
+**Orchestrator** (Node.js/TypeScript):
 ```bash
-# Will lint all the app & packages with the supported `lint` script.
-# See `@repo/eslint-config` to customize the behavior.
-pnpm run lint
+cd apps/orchestrator
+pnpm run dev      # Development with watch mode
+pnpm run build    # Compile TypeScript
+pnpm run start    # Run production build
 ```
 
-#### Format
-
+**AI Logic** (Python):
 ```bash
-# Will format all the supported `.ts,.js,json,.tsx,.jsx` files.
-# See `@repo/eslint-config/prettier-base.js` to customize the behavior.
-pnpm format
+cd apps/ai-logic
+pnpm run dev      # Start FastAPI with reload
+pnpm run start    # Start production server
 ```
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
+**Video Engine** (Python):
 ```bash
-npx turbo login
+cd apps/video-engine
+pnpm run dev      # Start FastAPI with reload
+pnpm run start    # Start production server
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+## 🚢 Deployment
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+### GitHub Actions (Automated)
 
-```bash
-npx turbo link
+The workflow automatically runs hourly and generates videos:
+
+1. Triggers on schedule (`0 * * * *`) or manual dispatch
+2. Sets up Node.js, Python, and FFmpeg
+3. Installs all dependencies
+4. Starts AI Logic and Video Engine services
+5. Runs orchestrator to generate video
+6. Uploads video and script as artifacts
+7. (Optional) Uploads to S3
+
+### Manual Deployment
+
+1. **Build for production**
+   ```bash
+   pnpm run build
+   ```
+
+2. **Deploy services** to your infrastructure
+   - Orchestrator: Node.js server
+   - AI Logic: Python/uvicorn service
+   - Video Engine: Python/uvicorn service with FFmpeg
+
+3. **Configure environment** variables for production
+
+4. **Set up monitoring** and logging
+
+## 📚 API Documentation
+
+### AI Logic Service (Port 8001)
+
+**Health Check**
+```http
+GET /health
 ```
 
-## Useful Links
+**Generate Script**
+```http
+POST /generate-script
+Content-Type: application/json
 
-This example take some inspiration the [with-nextjs](https://github.com/vercel/turborepo/tree/main/examples/with-nextjs) `Turbo` example and [01-cats-app](https://github.com/nestjs/nest/tree/master/sample/01-cats-app) `NestJs` sample.
+{
+  "topic": "AI Trends 2026",
+  "target_duration": 60,
+  "target_platforms": ["tiktok", "instagram", "youtube"],
+  "style": "entertaining"
+}
+```
 
-Learn more about the power of Turborepo:
+### Video Engine Service (Port 8002)
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+**Health Check**
+```http
+GET /health
+```
+
+**Generate Video**
+```http
+POST /generate-video
+Content-Type: application/json
+
+{
+  "script": { /* VideoScript object */ },
+  "output_bucket": "auto-short-factory-output",
+  "output_key": "videos/video_123.mp4"
+}
+```
+
+### Interactive API Docs
+
+- AI Logic: http://localhost:8001/docs
+- Video Engine: http://localhost:8002/docs
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🙏 Acknowledgments
+
+- **Turborepo** for monorepo tooling
+- **Google Gemini** for AI capabilities
+- **FFmpeg** for video processing
+- **FastAPI** for Python services
+
+---
+
+**Built with ❤️ using Turborepo, TypeScript, Python, Gemini AI, and FFmpeg**
