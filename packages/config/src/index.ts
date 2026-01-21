@@ -5,6 +5,11 @@ import { env } from './env';
  */
 export const geminiConfig = {
     apiKey: env.GEMINI_API_KEY,
+    keys: {
+        default: env.GEMINI_API_KEY,
+        virachai: env.GEMINI_API_VIRACHAI,
+        wongsena: env.GEMINI_API_WONGSENA,
+    },
     model: env.GEMINI_MODEL,
     generationConfig: {
         temperature: 0.9,
@@ -98,6 +103,10 @@ export const config = {
     s3: s3Config,
     video: videoConfig,
     platforms: platformRequirements,
+    googleForms: {
+        url: env.GOOGLE_FORM_URL,
+        entryId: env.GOOGLE_FORM_ENTRY_ID,
+    },
     isDevelopment: env.NODE_ENV === 'development',
     isProduction: env.NODE_ENV === 'production',
     isTest: env.NODE_ENV === 'test',

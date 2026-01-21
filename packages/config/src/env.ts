@@ -5,7 +5,9 @@ import { z } from 'zod';
  */
 const envSchema = z.object({
     // Gemini AI Configuration
-    GEMINI_API_KEY: z.string().min(1, 'Gemini API key is required'),
+    GEMINI_API_KEY: z.string().optional(),
+    GEMINI_API_VIRACHAI: z.string().optional(),
+    GEMINI_API_WONGSENA: z.string().optional(),
     GEMINI_MODEL: z.string().default('gemini-1.5-flash'),
 
     // AWS S3 Configuration
@@ -21,6 +23,10 @@ const envSchema = z.object({
     VIDEO_WIDTH: z.coerce.number().default(1080),
     VIDEO_HEIGHT: z.coerce.number().default(1920),
     VIDEO_FPS: z.coerce.number().default(30),
+
+    // Google Sheets / Forms Logging
+    GOOGLE_FORM_URL: z.string().default('https://docs.google.com/forms/d/e/1FAIpQLSdHpIZCuvVUayjpfWDuuYGzR73dEXK6RjvAEwiQ8NbGq1eKWg/formResponse'),
+    GOOGLE_FORM_ENTRY_ID: z.string().default('entry.1100908320'),
 
     // Node Environment
     NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),

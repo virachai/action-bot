@@ -58,7 +58,8 @@
     },
     "generate:video": {
       "dependsOn": [
-        "generate:script"
+        "generate:script",
+        "db:generate"
       ],
       "cache": true,
       "outputs": [
@@ -69,6 +70,25 @@
         "AWS_SECRET_ACCESS_KEY",
         "AWS_REGION"
       ]
+    },
+    "db:generate": {
+      "cache": true,
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
+      "outputs": [
+        "node_modules/.prisma/client"
+      ]
+    },
+    "db:push": {
+      "cache": false,
+      "inputs": [
+        "prisma/schema.prisma"
+      ]
+    },
+    "db:studio": {
+      "cache": false,
+      "persistent": true
     },
     "clean": {
       "cache": false

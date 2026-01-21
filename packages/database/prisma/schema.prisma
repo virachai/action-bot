@@ -1,0 +1,89 @@
+// Use Prisma with Turborepo: https://github.com/vercel/turborepo/tree/main/examples/with-prisma
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["auto-short-factory"]
+}
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["multiSchema"]
+}
+
+enum JobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  @@schema("auto-short-factory")
+}
+
+enum AssetType {
+  IMAGE
+  VIDEO
+  AUDIO
+  FONT
+  @@schema("auto-short-factory")
+}
+
+model Topic {
+  id              String   @id @default(cuid())
+  content         String   @db.Text
+  style           String?  // educational, entertaining, etc.
+  targetDuration  Int      @default(60)
+  scripts         Script[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@schema("auto-short-factory")
+}
+
+model Script {
+  id              String    @id @default(cuid())
+  topicId         String
+  topic           Topic     @relation(fields: [topicId], references: [id])
+  title           String
+  description     String?   @db.Text
+  rawJson         Json      // Complete Gemini output
+  scenes          Json      // Structured scene data
+  captions        Json      // Structured caption data
+  videoJobs       VideoJob[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([topicId])
+  @@schema("auto-short-factory")
+}
+
+model VideoJob {
+  id              String    @id @default(cuid())
+  scriptId        String
+  script          Script    @relation(fields: [scriptId], references: [id])
+  status          JobStatus @default(PENDING)
+  progress        Int       @default(0)
+  outputUrl       String?
+  thumbnailUrl    String?
+  error           String?   @db.Text
+  processingTime  Int?      // in seconds
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([scriptId])
+  @@index([status])
+  @@schema("auto-short-factory")
+}
+
+model Asset {
+  id              String    @id @default(cuid())
+  key             String    @unique
+  bucket          String
+  type            AssetType
+  url             String
+  metadata        Json?     // resolution, bitrate, etc.
+  createdAt       DateTime  @default(now())
+
+  @@schema("auto-short-factory")
+}

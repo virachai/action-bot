@@ -13,6 +13,9 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "type-check": "turbo run type-check",
+    "db:generate": "turbo run db:generate",
+    "db:push": "turbo run db:push",
+    "db:studio": "turbo run db:studio --filter=@repo/database",
     "generate:video": "turbo run generate:video",
     "setup": "node scripts/setup.js",
     "clean": "turbo run clean && rm -rf node_modules"
@@ -20,6 +23,7 @@
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
+    "@types/node": "^20.11.5",
     "prettier": "^3.2.5",
     "turbo": "^2.7.5"
   },
