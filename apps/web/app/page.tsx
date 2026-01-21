@@ -1,147 +1,140 @@
-import type { Link } from '@repo/api';
-import { Button } from '@repo/ui/button';
-import Image, { type ImageProps } from 'next/image';
+'use client';
 
-import styles from './page.module.css';
+import useSWR from 'swr';
+import { apiClient } from './lib/api-client';
+import { JobStats, VideoJob } from './lib/types';
+import { Activity, CheckCircle, Clock, AlertCircle, PlayCircle, FileVideo } from 'lucide-react';
+import Link from 'next/link';
+import { formatDistanceToNow } from 'date-fns';
 
-type Props = Omit<ImageProps, 'src'> & {
-  srcLight: string;
-  srcDark: string;
-};
+const fetcher = (url: string) => apiClient.get(url).then((res) => res.data);
 
-const ThemeImage = (props: Props) => {
-  const { srcLight, srcDark, ...rest } = props;
-
-  return (
-    <>
-      <Image {...rest} src={srcLight} className="imgLight" />
-      <Image {...rest} src={srcDark} className="imgDark" />
-    </>
-  );
-};
-
-async function getLinks(): Promise<Link[]> {
-  try {
-    const res = await fetch('http://localhost:3000/links', {
-      cache: 'no-store',
-    });
-
-    if (!res.ok) {
-      throw new Error('Failed to fetch links');
-    }
-
-    return res.json();
-  } catch (error) {
-    console.error('Error fetching links:', error);
-    return [];
-  }
-}
-
-export default async function Home() {
-  const links = await getLinks();
+export default function Dashboard() {
+  const { data: stats } = useSWR<JobStats>('/jobs/stats', fetcher, { refreshInterval: 5000 });
+  const { data: jobs } = useSWR<VideoJob[]>('/jobs', fetcher, { refreshInterval: 5000 });
 
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <ThemeImage
-          className={styles.logo}
-          srcLight="turborepo-dark.svg"
-          srcDark="turborepo-light.svg"
-          alt="Turborepo logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>apps/web/app/page.tsx</code>
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new/clone?demo-description=Learn+to+implement+a+monorepo+with+a+two+Next.js+sites+that+has+installed+three+local+packages.&demo-image=%2F%2Fimages.ctfassets.net%2Fe5382hct74si%2F4K8ZISWAzJ8X1504ca0zmC%2F0b21a1c6246add355e55816278ef54bc%2FBasic.png&demo-title=Monorepo+with+Turborepo&demo-url=https%3A%2F%2Fexamples-basic-web.vercel.sh%2F&from=templates&project-name=Monorepo+with+Turborepo&repository-name=monorepo-turborepo&repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fturborepo%2Ftree%2Fmain%2Fexamples%2Fbasic&root-directory=apps%2Fdocs&skippable-integrations=1&teamSlug=vercel&utm_source=create-turbo"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://turborepo.dev/docs?utm_source"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    <div className="min-h-screen bg-gray-50 p-6 md:p-10 font-sans">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">🏭 Auto-Short Factory</h1>
+            <p className="text-gray-500 mt-1">Real-time production monitoring</p>
+          </div>
+          <button className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition-colors cursor-not-allowed opacity-75" title="Coming soon">
+            + New Generation
+          </button>
         </div>
 
-        <Button appName="web" className={styles.secondary}>
-          Open alert
-        </Button>
-
-        {links.length > 0 ? (
-          <div className={styles.ctas}>
-            {links.map((link) => (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                title={link.description}
-                className={styles.secondary}
-              >
-                {link.title}
-              </a>
-            ))}
-          </div>
-        ) : (
-          <div style={{ color: '#666' }}>
-            No links available. Make sure the NestJS API is running on port
-            3000.
-          </div>
-        )}
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com/templates?search=turborepo&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <StatCard
+            title="Total Jobs"
+            value={stats?.total ?? '-'}
+            icon={<Activity className="w-5 h-5 text-blue-600" />}
+            color="bg-blue-50 text-blue-700"
           />
-          Examples
-        </a>
-        <a
-          href="https://turborepo.dev?utm_source=create-turbo"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
+          <StatCard
+            title="Completed"
+            value={stats?.completed ?? '-'}
+            icon={<CheckCircle className="w-5 h-5 text-green-600" />}
+            color="bg-green-50 text-green-700"
           />
-          Go to turborepo.dev →
-        </a>
-      </footer>
+          <StatCard
+            title="Processing"
+            value={stats?.processing ?? '-'}
+            icon={<Clock className="w-5 h-5 text-purple-600" />}
+            color="bg-purple-50 text-purple-700"
+          />
+          <StatCard
+            title="Failed"
+            value={stats?.failed ?? '-'}
+            icon={<AlertCircle className="w-5 h-5 text-red-600" />}
+            color="bg-red-50 text-red-700"
+          />
+        </div>
+
+        {/* Recent Jobs Table */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-gray-900">Recent Production Jobs</h2>
+            <span className="text-sm text-gray-400">Auto-refreshing every 5s</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-gray-50 text-gray-600 font-medium">
+                <tr>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Topic / Title</th>
+                  <th className="px-6 py-3">Created</th>
+                  <th className="px-6 py-3">Duration</th>
+                  <th className="px-6 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {!jobs ? (
+                  <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">Loading factory data...</td></tr>
+                ) : jobs.length === 0 ? (
+                  <tr><td colSpan={5} className="px-6 py-8 text-center text-gray-500">No jobs found in the system.</td></tr>
+                ) : (
+                  jobs.map((job) => (
+                    <tr key={job.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4">
+                        <StatusBadge status={job.status} />
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="font-medium text-gray-900">{job.script?.topic?.content || job.script?.title || 'Unknown Topic'}</div>
+                        <div className="text-xs text-gray-500 font-mono mt-0.5">{job.id.slice(0, 8)}...</div>
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">
+                        {formatDistanceToNow(new Date(job.createdAt), { addSuffix: true })}
+                      </td>
+                      <td className="px-6 py-4 text-gray-500">
+                        {job.script?.scenes ? `${job.script.scenes.length} Scenes` : '-'}
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                         <Link href={`/jobs/${job.id}`} className="text-blue-600 hover:text-blue-800 font-medium text-sm inline-flex items-center gap-1">
+                            Details <PlayCircle className="w-4 h-4" />
+                         </Link>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   );
+}
+
+function StatCard({ title, value, icon, color }: { title: string, value: string | number, icon: React.ReactNode, color: string }) {
+    return (
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-start justify-between">
+            <div>
+                <p className="text-sm font-medium text-gray-500">{title}</p>
+                <p className="text-2xl font-bold text-gray-900 mt-2">{value}</p>
+            </div>
+            <div className={`p-2 rounded-lg ${color}`}>
+                {icon}
+            </div>
+        </div>
+    );
+}
+
+function StatusBadge({ status }: { status: string }) {
+    const styles: Record<string, string> = {
+        COMPLETED: 'bg-green-100 text-green-700',
+        PROCESSING: 'bg-purple-100 text-purple-700',
+        FAILED: 'bg-red-100 text-red-700',
+        PENDING: 'bg-gray-100 text-gray-700',
+    };
+
+    return (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${styles[status] || styles.PENDING}`}>
+            {status}
+        </span>
+    );
 }
