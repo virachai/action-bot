@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events';
 import { config } from '@repo/config';
 import { WorkflowState, WorkflowJob, WorkflowError } from '@repo/types';
 import { prisma } from '@repo/database';
@@ -11,6 +12,7 @@ import { GoogleSheetsService } from './services/google-sheets.service.js';
  * Manages the end-to-end video generation pipeline
  */
 export class WorkflowOrchestrator {
+    public static events = new EventEmitter();
     private s3Service: S3Service;
     private aiService: AILogicService;
     private videoService: VideoEngineService;
@@ -207,6 +209,14 @@ export class WorkflowOrchestrator {
                     error: job.error?.message,
                 },
             });
+
+            // Emit event for real-time updates
+            WorkflowOrchestrator.events.emit('stateChange', {
+                id: job.id,
+                status: statusMap[job.state] || 'PROCESSING',
+                state: job.state,
+                updatedAt: new Date(),
+            });
         } catch (error) {
             console.error(`⚠️  Failed to persist job state to database: ${error}`);
         }
@@ -217,42 +227,5 @@ export class WorkflowOrchestrator {
      */
     private generateId(): string {
         return `wf_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    }
-}
-
-/**
- * Main entry point
- */
-async function main() {
-    try {
-        // Get topic from environment or use default
-        const topic = process.env.VIDEO_TOPIC || 'The Future of AI in 2026';
-
-        console.log('╔════════════════════════════════════════╗');
-        console.log('║   AUTO-SHORT-FACTORY ORCHESTRATOR     ║');
-        console.log('╚════════════════════════════════════════╝\n');
-
-        const orchestrator = new WorkflowOrchestrator();
-
-        // Health check
-        console.log('🔍 Performing health checks...');
-        const health = await orchestrator.healthCheck();
-        console.log(`   AI Logic: ${health.aiLogic ? '✅' : '❌'}`);
-        console.log(`   Video Engine: ${health.videoEngine ? '✅' : '❌'}`);
-        console.log(`   S3: ${health.s3 ? '✅' : '❌'}\n`);
-
-        if (!health.aiLogic || !health.videoEngine || !health.s3) {
-            console.error('⚠️  Some services are unavailable. Please check configuration.\n');
-            process.exit(1);
-        }
-
-        // Execute workflow
-        await orchestrator.executeWorkflow(topic);
-
-        console.log('👋 Orchestrator finished successfully!\n');
-        process.exit(0);
-    } catch (error) {
-        console.error('💥 Fatal error:', error);
-        process.exit(1);
     }
 }

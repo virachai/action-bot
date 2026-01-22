@@ -117,7 +117,9 @@ auto-short-factory/
 - **AWS Account** with S3 buckets
 - **Google AI Studio** API key for Gemini
 
-### Installation
+### 💻 Local Development (Web & API)
+
+This section covers setting up the dashboard and public API for local development and testing.
 
 1. **Clone the repository**
    ```bash
@@ -130,33 +132,40 @@ auto-short-factory/
    pnpm install
    ```
 
-3. **Install Python dependencies**
-   ```bash
-   # AI Logic service
-   cd apps/ai-logic
-   pip install -r requirements.txt
-   
-   # Video Engine service
-   cd ../video-engine
-   pip install -r requirements.txt
-   cd ../..
-   ```
-
-4. **Set up environment variables**
+3. **Set up environment variables**
    ```bash
    cp .env.example .env.local
    ```
-   
-   Edit `.env.local` with your credentials (see [Configuration](#configuration))
+   Edit `.env.local` with your credentials.
 
-5. **Build all packages**
+4. **Start Web & API services**
    ```bash
-   pnpm run build
+   # Start both web and api in development mode
+   pnpm run dev --filter web --filter api
    ```
+   Access the dashboard at `http://localhost:3000`.
 
-### Quick Start
+### 🐍 GitHub Actions Setup (Python Services)
 
-Start all services in development mode:
+The core video generation logic (Python services) is designed to run primarily on GitHub Actions for automated hourly processing.
+
+#### 1. Configure GitHub Secrets
+For the automated pipeline to work, configure these secrets in your repository settings:
+- `GEMINI_API_KEY` - Your Gemini API key
+- `AWS_ACCESS_KEY_ID` - AWS access key
+- `AWS_SECRET_ACCESS_KEY` - AWS secret key
+- `AWS_REGION` - AWS region
+- `S3_BUCKET_ASSETS` - Assets bucket name
+
+#### 2. Workflow Automation
+The workflow [auto-video-factory.yml](.github/workflows/auto-video-factory.yml) handles:
+- Setting up the Python environment (3.11).
+- Installing FFmpeg for video rendering.
+- Starting the **AI Logic** and **Video Engine** services.
+- Triggering the **Orchestrator** to generate and upload the video.
+
+#### 3. Local Testing of Python Services
+If you need to test the Python services locally before pushing to GitHub:
 
 ```bash
 # Terminal 1: AI Logic Service
@@ -167,84 +176,30 @@ pnpm run dev
 cd apps/video-engine
 pnpm run dev
 
-# Terminal 3: Orchestrator
+# Terminal 3: Run Orchestrator (requires local env setup)
 cd apps/orchestrator
 pnpm run dev
 ```
 
-## ⚙️ Configuration
-
-### Environment Variables
-
-Create a `.env.local` file in the root directory:
-
-```bash
-# Gemini AI Configuration
-GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-1.5-flash
-
-# AWS S3 Configuration
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_REGION=us-east-1
-S3_BUCKET_INPUT=auto-short-factory-input
-S3_BUCKET_OUTPUT=auto-short-factory-output
-S3_BUCKET_ASSETS=auto-short-factory-assets
-
-# Video Configuration
-VIDEO_TOPIC=The Future of AI
-VIDEO_WIDTH=1080
-VIDEO_HEIGHT=1920
-VIDEO_FPS=30
-
-# Service URLs (development)
-AI_LOGIC_URL=http://localhost:8001
-VIDEO_ENGINE_URL=http://localhost:8002
-
-# Environment
-NODE_ENV=development
-```
-
-### GitHub Secrets
-
-For GitHub Actions, configure these secrets in your repository settings:
-
-- `GEMINI_API_KEY` - Your Gemini API key
-- `AWS_ACCESS_KEY_ID` - AWS access key
-- `AWS_SECRET_ACCESS_KEY` - AWS secret key
-- `AWS_REGION` - AWS region (optional, defaults to us-east-1)
-- `S3_BUCKET_INPUT` - Input bucket name (optional)
-- `S3_BUCKET_OUTPUT` - Output bucket name (optional)
-- `S3_BUCKET_ASSETS` - Assets bucket name (optional)
-- `VIDEO_TOPIC` - Default video topic (optional)
-
 ## 💻 Development
 
-### Available Scripts
-
+### Root Commands
 From the root directory:
 
 ```bash
-# Start all services in dev mode
-pnpm run dev
+# Start Web and API only
+pnpm run dev --filter web --filter api
 
-# Build all packages
+# Build everything
 pnpm run build
 
-# Type check all TypeScript code
+# Type check, lint, and format
 pnpm run type-check
-
-# Lint all code
 pnpm run lint
-
-# Format all code
 pnpm run format
 
-# Run tests
+# Run all tests
 pnpm run test
-
-# Clean build artifacts
-pnpm run clean
 ```
 
 ### Individual Service Commands

@@ -4,7 +4,7 @@ import * as React from 'react';
 import useSWR from 'swr';
 import { apiClient } from '../../lib/api-client';
 import { VideoJob } from '../../lib/types';
-import { ArrowLeft, Video, FileText, CheckCircle, AlertTriangle, Clock, Layers } from 'lucide-react';
+import { ArrowLeft, Video, FileText, CheckCircle, AlertTriangle, Clock, Layers, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
@@ -43,7 +43,24 @@ export default function JobDetailsPage({ params }: { params: Promise<{ id: strin
                         <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {format(new Date(job.createdAt), 'PPpp')}</span>
                     </div>
                 </div>
-                <StatusBadge status={job.status} />
+                <div className="flex items-center gap-3">
+                    {job.status === 'FAILED' && (
+                        <button
+                            onClick={async () => {
+                                try {
+                                    await apiClient.post(`/jobs/${job.id}/retry`);
+                                    alert('Retry started!');
+                                } catch (e) {
+                                    alert('Retry failed.');
+                                }
+                            }}
+                            className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                        >
+                            <RefreshCw className="w-4 h-4" /> Retry Generation
+                        </button>
+                    )}
+                    <StatusBadge status={job.status} />
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

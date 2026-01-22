@@ -1,4 +1,5 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Post, Body, Sse } from '@nestjs/common';
+import { Observable, fromEvent, map } from 'rxjs';
 import { JobsService } from './jobs.service';
 import { JobStatus } from '@repo/database';
 
@@ -28,5 +29,20 @@ export class JobsController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<any> {
     return this.jobsService.findOne(id);
+  }
+
+  @Post('generate')
+  async generate(@Body('topic') topic: string) {
+    return this.jobsService.generate(topic);
+  }
+
+  @Post(':id/retry')
+  async retry(@Param('id') id: string) {
+    return this.jobsService.retry(id);
+  }
+
+  @Sse('sse')
+  sse(): Observable<MessageEvent> {
+    return this.jobsService.getEventStream();
   }
 }
