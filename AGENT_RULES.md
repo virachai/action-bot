@@ -117,3 +117,26 @@ root/
 -   **Environment Variables**: Validation via `zod` in `@repo/config` is required on startup.
 -   **Health Checks**: All services must expose a health check method/endpoint.
 -   **Secrets**: Production secrets must mirror `.env.example` structure.
+
+---
+
+## 6. 🌐 Local Development & Port Management
+
+### 6.1 Standardized Port Assignments
+To prevent port collisions, all applications must use the assigned port from the 8000-series range.
+
+| Application    | Port | URL                     | Role                        |
+|----------------|------|-------------------------|-----------------------------|
+| `web`          | 8000 | `http://localhost:8000` | User Front-end (Next.js)    |
+| `ai-logic`     | 8001 | `http://localhost:8001` | AI Logic Service (FastAPI)  |
+| `video-engine` | 8002 | `http://localhost:8002` | Video Processing (FastAPI) |
+| `api`          | 8003 | `http://localhost:8003` | Backend API (NestJS)        |
+| `orchestrator` | 8004 | `http://localhost:8004` | Workflow Manager (RESERVED) |
+| `dashboard`    | 8005 | `http://localhost:8005` | Admin Dashboard (Next.js)   |
+
+### 6.2 Implementation Rules
+- **Environment Variables**: Always use `PORT` environment variable if available, defaulting to the assigned port.
+- **Service Discovery**: Use the `*_URL` environment variables defined in `.env` to communicate between services.
+- **Port Ranges**:
+    - `8000-8009`: Production-related services.
+    - `8010-8019`: Debugging and instrumentation tools.
