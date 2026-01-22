@@ -142,7 +142,16 @@ export class JobsService {
     const script = {
         id: scriptId,
         topic: scriptData.title,
-        // ... other fields might be needed depending on video engine requirements
+        title: scriptData.title,
+        description: scriptData.title,
+        totalDuration: 60,
+        scenes: [],
+        captions: [],
+        audioTracks: [],
+        metadata: {
+            targetPlatforms: ['tiktok' as const, 'instagram' as const, 'youtube' as const],
+            createdAt: new Date().toISOString(),
+        },
     };
 
     const videoMetadata = await orchestrator.assembleVideoStep(job, script);
@@ -169,9 +178,17 @@ export class JobsService {
     // Dummy video metadata for finalization (Sheets logging uses it)
     const videoMetadata = {
         id: videoId,
+        scriptId: jobData.scriptId,
+        topic: jobData.script?.topic?.content || 'Unknown',
+        title: jobData.script?.title || 'Untitled',
         outputUrl: `https://s3.amazonaws.com/videos/${videoId}.mp4`, // This should be real in production
         duration: 60,
+        width: 1080,
+        height: 1920,
+        fps: 30,
         fileSize: 1024 * 1024 * 10,
+        codec: 'h264',
+        createdAt: new Date().toISOString(),
     };
 
     await orchestrator.finalizeWorkflowStep(job, videoMetadata);
