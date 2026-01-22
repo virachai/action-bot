@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "PORT=8003 nest start --watch",
+    "dev": "cross-env PORT=8003 nest start --watch",
     "build": "nest build",
     "start": "nest start",
     "start:debug": "nest start --debug --watch",

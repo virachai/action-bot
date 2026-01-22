@@ -2,7 +2,9 @@
   "$schema": "https://turborepo.dev/schema.json",
   "globalDependencies": [
     "**/.env.*local",
-    "**/.env",
+    "**/.env"
+  ],
+  "globalEnv": [
     "PORT",
     "NODE_ENV",
     "AI_LOGIC_URL",
