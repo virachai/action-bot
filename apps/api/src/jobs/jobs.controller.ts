@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query, Post, Body, Sse } from '@nestjs/common';
-import { Observable, fromEvent, map } from 'rxjs';
+import { Observable } from 'rxjs';
 import { JobsService } from './jobs.service';
 import { JobStatus } from '@repo/database';
 
@@ -39,6 +39,21 @@ export class JobsController {
   @Post(':id/retry')
   async retry(@Param('id') id: string) {
     return this.jobsService.retry(id);
+  }
+
+  @Post('step-script')
+  async stepScript(@Body('topic') topic: string) {
+    return this.jobsService.generateScript(topic);
+  }
+
+  @Post(':id/step-video')
+  async stepVideo(@Param('id') id: string, @Body('scriptId') scriptId: string) {
+    return this.jobsService.assembleVideo(id, scriptId);
+  }
+
+  @Post(':id/step-finalize')
+  async stepFinalize(@Param('id') id: string, @Body('videoId') videoId: string) {
+    return this.jobsService.finalize(id, videoId);
   }
 
   @Sse('sse')

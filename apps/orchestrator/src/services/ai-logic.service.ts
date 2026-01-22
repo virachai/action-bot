@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { config } from '@repo/config';
 import { GeminiRequest, GeminiResponse, VideoScript } from '@repo/types';
 
 /**

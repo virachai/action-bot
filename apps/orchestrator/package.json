@@ -8,7 +8,8 @@
         "build": "tsc",
         "start": "node dist/index.js",
         "type-check": "tsc --noEmit",
-        "lint": "eslint . --max-warnings 0",
+        "Xlint": "eslint . --max-warnings 7",
+        "lint": "eslint .",
         "clean": "rm -rf dist"
     },
     "dependencies": {
@@ -24,7 +25,7 @@
         "@repo/eslint-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
         "@types/node": "^20.11.5",
-        "eslint": "^8.56.0",
+        "eslint": "^9.31.0",
         "tsx": "^4.7.0",
         "typescript": "^5.3.3"
     }

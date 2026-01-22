@@ -12,14 +12,12 @@ export const libraryConfig = [
       globals: {
         React: true,
         JSX: true,
+        node: true,
       },
       parserOptions: {
         ecmaVersion: "latest",
         sourceType: "module",
       },
-    },
-    env: {
-      node: true,
     },
     settings: {
       "import/resolver": {
@@ -30,7 +28,7 @@ export const libraryConfig = [
     },
   },
   {
-    ignores: [".*.js", "node_modules/", "dist/"],
+    ignores: [".*.js", ".*.mjs", "*.config.*", "node_modules/", "dist/"],
   },
 ];
 

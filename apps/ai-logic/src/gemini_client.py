@@ -25,7 +25,9 @@ class GeminiClient:
                     self.api_keys.append(value)
 
         if not self.api_keys:
-            raise ValueError("No Gemini API keys found. Please set at least one environment variable starting with GEMINI_API_")
+            raise ValueError(
+                "No Gemini API keys found. Please set at least one environment variable starting with GEMINI_API_"
+            )
 
         print(f"🔑 Loaded {len(self.api_keys)} Gemini API keys from environment")
         self._rotate_key()
@@ -65,7 +67,9 @@ class GeminiClient:
         for i, api_key in enumerate(keys_to_try):
             try:
                 self._configure_client(api_key)
-                print(f"🤖 Calling Gemini API (Attempt {i+1}/{len(keys_to_try)}) for topic: {request.topic}")
+                print(
+                    f"🤖 Calling Gemini API (Attempt {i + 1}/{len(keys_to_try)}) for topic: {request.topic}"
+                )
 
                 response = self.model.generate_content(prompt)
 
@@ -94,19 +98,23 @@ class GeminiClient:
 
             except Exception as e:
                 error_msg = str(e)
-                print(f"⚠️ Attempt failed with key {self._mask_key(api_key)}: {error_msg}")
+                print(
+                    f"⚠️ Attempt failed with key {self._mask_key(api_key)}: {error_msg}"
+                )
                 errors.append(f"{self._mask_key(api_key)}: {error_msg}")
 
                 # If we have more keys to try, continue
                 if i < len(keys_to_try) - 1:
                     print("➡️ Retrying with next available key...")
-                    time.sleep(1) # Brief pause before retry
+                    time.sleep(1)  # Brief pause before retry
                     continue
                 else:
                     print("❌ All API keys exhausted.")
 
         # If we get here, all keys failed
-        raise ValueError(f"All Gemini API keys failed after {len(keys_to_try)} attempts. Errors: {'; '.join(errors)}")
+        raise ValueError(
+            f"All Gemini API keys failed after {len(keys_to_try)} attempts. Errors: {'; '.join(errors)}"
+        )
 
     def _build_prompt(self, request: GeminiRequest) -> str:
         """Build the prompt for Gemini"""
@@ -117,14 +125,14 @@ Generate a complete video script in JSON format for the following topic:
 Topic: {request.topic}
 Style: {request.style}
 Target Duration: {request.target_duration} seconds
-Target Platforms: {', '.join(request.target_platforms)}
+Target Platforms: {", ".join(request.target_platforms)}
 
 Requirements:
 1. Create a hook in the first 3 seconds
 2. Use vertical format (9:16 aspect ratio)
 3. Include engaging captions with proper timing
 4. Suggest appropriate background music
-5. Make it suitable for {', '.join(request.target_platforms)}
+5. Make it suitable for {", ".join(request.target_platforms)}
 6. Total duration should be around {request.target_duration} seconds
 
 Return ONLY valid JSON matching this exact structure:

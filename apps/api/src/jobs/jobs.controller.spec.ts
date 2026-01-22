@@ -5,7 +5,6 @@ import { JobsService } from './jobs.service';
 
 describe('JobsController', () => {
   let controller: JobsController;
-  let service: JobsService;
 
   const mockJobsService = {
     findAll: jest.fn(),
@@ -28,7 +27,6 @@ describe('JobsController', () => {
     }).compile();
 
     controller = module.get<JobsController>(JobsController);
-    service = module.get<JobsService>(JobsService);
   });
 
   it('should be defined', () => {

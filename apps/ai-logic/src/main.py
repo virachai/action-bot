@@ -12,7 +12,7 @@ load_dotenv()
 app = FastAPI(
     title="AI Logic Service",
     description="AI-powered video script generation using Gemini 1.5 Flash",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Add CORS middleware
@@ -35,61 +35,48 @@ except Exception as e:
 @app.get("/")
 async def root():
     """Root endpoint"""
-    return {
-        "service": "AI Logic Service",
-        "version": "1.0.0",
-        "status": "running"
-    }
+    return {"service": "AI Logic Service", "version": "1.0.0", "status": "running"}
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "gemini_configured": gemini_client is not None
-    }
+    return {"status": "healthy", "gemini_configured": gemini_client is not None}
 
 
 @app.post("/generate-script", response_model=GeminiResponse)
 async def generate_script(request: GeminiRequest):
     """
     Generate a video script from a topic using Gemini AI
-    
+
     Args:
         request: GeminiRequest with topic and parameters
-    
+
     Returns:
         GeminiResponse with generated script or error
     """
     if not gemini_client:
         raise HTTPException(
             status_code=500,
-            detail="Gemini client not initialized. Check GEMINI_API_KEY."
+            detail="Gemini client not initialized. Check GEMINI_API_KEY.",
         )
-    
+
     try:
-        print(f"\n{'='*50}")
-        print(f"📝 New script generation request")
+        print(f"\n{'=' * 50}")
+        print("📝 New script generation request")
         print(f"   Topic: {request.topic}")
         print(f"   Style: {request.style}")
         print(f"   Duration: {request.target_duration}s")
-        print(f"{'='*50}\n")
-        
+        print(f"{'=' * 50}\n")
+
         script = gemini_client.generate_script(request)
-        
-        return GeminiResponse(
-            success=True,
-            script=script
-        )
-        
+
+        return GeminiResponse(success=True, script=script)
+
     except ValueError as e:
         error_msg = str(e)
         print(f"❌ Validation error: {error_msg}")
-        return GeminiResponse(
-            success=False,
-            error=error_msg
-        )
+        return GeminiResponse(success=False, error=error_msg)
     except Exception as e:
         error_msg = f"Failed to generate script: {str(e)}"
         print(f"❌ Error: {error_msg}")
@@ -98,18 +85,13 @@ async def generate_script(request: GeminiRequest):
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     port = int(os.getenv("PORT", "8001"))
-    
+
     print("\n╔════════════════════════════════════════╗")
     print("║       AI LOGIC SERVICE STARTING        ║")
     print("╚════════════════════════════════════════╝\n")
     print(f"🚀 Starting server on http://localhost:{port}")
     print(f"📚 API docs: http://localhost:{port}/docs\n")
-    
-    uvicorn.run(
-        "src.main:app",
-        host="0.0.0.0",
-        port=port,
-        reload=True
-    )
+
+    uvicorn.run("src.main:app", host="0.0.0.0", port=port, reload=True)

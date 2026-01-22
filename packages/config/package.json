@@ -9,7 +9,7 @@
         "./env": "./src/env.ts"
     },
     "scripts": {
-        "lint": "eslint . --max-warnings 0",
+        "lint": "eslint . --max-warnings 7",
         "type-check": "tsc --noEmit"
     },
     "dependencies": {

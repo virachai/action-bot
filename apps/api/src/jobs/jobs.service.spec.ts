@@ -13,7 +13,6 @@ jest.mock('@repo/orchestrator', () => ({
 
 describe('JobsService', () => {
   let service: JobsService;
-  let database: DatabaseService;
 
   const mockPrisma = {
     videoJob: {
@@ -35,7 +34,6 @@ describe('JobsService', () => {
     }).compile();
 
     service = module.get<JobsService>(JobsService);
-    database = module.get<DatabaseService>(DatabaseService);
   });
 
   it('should be defined', () => {

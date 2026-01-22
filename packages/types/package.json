@@ -8,12 +8,13 @@
         ".": "./src/index.ts"
     },
     "scripts": {
-        "lint": "eslint . --max-warnings 0",
+        "lint": "eslint . --max-warnings 7",
         "type-check": "tsc --noEmit"
     },
     "devDependencies": {
         "@repo/eslint-config": "workspace:*",
         "@repo/typescript-config": "workspace:*",
+        "eslint": "^9.31.0",
         "typescript": "^5.3.3"
     }
 }

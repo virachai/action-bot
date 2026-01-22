@@ -18,7 +18,7 @@ export class GoogleSheetsService {
    * Submit data to Google Sheets
    * @param data Object to be logged (will be stringified)
    */
-  async logData(data: Record<string, any>): Promise<void> {
+  async logData(data: Record<string, unknown>): Promise<void> {
     try {
       const stringifiedData = JSON.stringify(data);
       const params = new URLSearchParams();

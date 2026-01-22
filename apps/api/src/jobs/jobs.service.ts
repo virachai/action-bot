@@ -101,12 +101,89 @@ export class JobsService {
     return { message: 'Retry started', jobId: id };
   }
 
+  async generateScript(topic: string) {
+    const { WorkflowOrchestrator } = await import('@repo/orchestrator');
+    const orchestrator = new WorkflowOrchestrator();
+
+    // Create a new job record first
+    const job = {
+        id: `wf_${Date.now()}_${Math.random().toString(36).substring(7)}`,
+        state: 'IDLE' as any,
+        topic,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+    };
+
+    // This will persist the job and generate the script
+    const script = await orchestrator.generateScriptStep(job);
+    return { jobId: job.id, script };
+  }
+
+  async assembleVideo(jobId: string, scriptId: string) {
+    const { WorkflowOrchestrator } = await import('@repo/orchestrator');
+    const orchestrator = new WorkflowOrchestrator();
+
+    const jobData = await this.findOne(jobId);
+    if (!jobData) throw new Error(`Job ${jobId} not found`);
+
+    const scriptData = await this.prisma.script.findUnique({ where: { id: scriptId } });
+    if (!scriptData) throw new Error(`Script ${scriptId} not found`);
+
+    const job = {
+        id: jobId,
+        state: 'GENERATING_SCRIPT' as any, // resume from here
+        topic: scriptData.title,
+        scriptId: scriptId,
+        createdAt: jobData.createdAt.toISOString(),
+        updatedAt: new Date().toISOString(),
+    };
+
+    // Reconstruct script object for video engine (simplified for now)
+    const script = {
+        id: scriptId,
+        topic: scriptData.title,
+        // ... other fields might be needed depending on video engine requirements
+    };
+
+    const videoMetadata = await orchestrator.assembleVideoStep(job, script);
+    return { jobId, videoMetadata };
+  }
+
+  async finalize(jobId: string, videoId: string) {
+    const { WorkflowOrchestrator } = await import('@repo/orchestrator');
+    const orchestrator = new WorkflowOrchestrator();
+
+    const jobData = await this.findOne(jobId);
+    if (!jobData) throw new Error(`Job ${jobId} not found`);
+
+    const videoJob = await this.prisma.videoJob.findUnique({ where: { id: jobId } });
+
+    const job = {
+        id: jobId,
+        state: 'ASSEMBLING_VIDEO' as any,
+        videoId: videoId,
+        createdAt: jobData.createdAt.toISOString(),
+        updatedAt: new Date().toISOString(),
+    };
+
+    // Dummy video metadata for finalization (Sheets logging uses it)
+    const videoMetadata = {
+        id: videoId,
+        outputUrl: `https://s3.amazonaws.com/videos/${videoId}.mp4`, // This should be real in production
+        duration: 60,
+        fileSize: 1024 * 1024 * 10,
+    };
+
+    await orchestrator.finalizeWorkflowStep(job, videoMetadata);
+    return { jobId, status: 'COMPLETED' };
+  }
+
   getEventStream(): Observable<any> {
     return new Observable((subscriber) => {
-      (async () => {
+      void (async () => {
         try {
-          const { WorkflowOrchestrator } = await import('@repo/orchestrator');
-          const subscription = fromEvent(WorkflowOrchestrator.events, 'stateChange')
+          const { WorkflowOrchestrator } = (await import('@repo/orchestrator')) as { WorkflowOrchestrator: any };
+          const subscription = fromEvent(WorkflowOrchestrator.events as any, 'stateChange')
             .pipe(map((data) => ({ data })))
             .subscribe(subscriber);
           return () => subscription.unsubscribe();
