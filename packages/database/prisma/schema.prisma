@@ -3,7 +3,7 @@
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["auto-short-factory"]
+  schemas  = ["auto_short_factory"]
 }
 
 generator client {
@@ -16,7 +16,7 @@ enum JobStatus {
   PROCESSING
   COMPLETED
   FAILED
-  @@schema("auto-short-factory")
+  @@schema("auto_short_factory")
 }
 
 enum AssetType {
@@ -24,7 +24,7 @@ enum AssetType {
   VIDEO
   AUDIO
   FONT
-  @@schema("auto-short-factory")
+  @@schema("auto_short_factory")
 }
 
 model Topic {
@@ -36,7 +36,7 @@ model Topic {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  @@schema("auto-short-factory")
+  @@schema("auto_short_factory")
 }
 
 model Script {
@@ -53,7 +53,7 @@ model Script {
   updatedAt       DateTime  @updatedAt
 
   @@index([topicId])
-  @@schema("auto-short-factory")
+  @@schema("auto_short_factory")
 }
 
 model VideoJob {
@@ -73,7 +73,7 @@ model VideoJob {
 
   @@index([scriptId])
   @@index([status])
-  @@schema("auto-short-factory")
+  @@schema("auto_short_factory")
 }
 
 model Asset {
@@ -85,5 +85,5 @@ model Asset {
   metadata        Json?     // resolution, bitrate, etc.
   createdAt       DateTime  @default(now())
 
-  @@schema("auto-short-factory")
+  @@schema("auto_short_factory")
 }
